@@ -1,4 +1,6 @@
-from sqlalchemy import create_engine
+import csv
+
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from constants import CONNECT_STRING, DIALECT, CLIENT_DIR
@@ -10,12 +12,13 @@ if DIALECT == 'oracle':
     cx_Oracle.init_oracle_client(CLIENT_DIR)
 
 engine = create_engine(CONNECT_STRING)
-models.create_db(engine)
+# models.create_db(engine)
 session = Session(engine)
 
 
-def get_departments_tree():
-    tree = dict()
-    for department in session.query(models.Department):
-        tree[department] = department.head_department
-    return tree
+def print_partners():
+    for partner in session.query(models.Summary):
+        print(partner)
+
+
+print_partners()

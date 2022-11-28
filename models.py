@@ -10,24 +10,71 @@ Base = declarative_base(cls=PreBase)
 
 
 class AuditMixin:
-    date_created = db.Column(db.Date)
-    date_modified = db.Column(db.Date)
+    creation_date = db.Column(db.Date)
     created_by = db.Column(db.String(30))
-    modified_by = db.Column(db.String(30))
+    last_update_date = db.Column(db.Date)
+    last_updated_by = db.Column(db.String(30))
 
 
-class Department(Base, AuditMixin):
-    __tablename__ = 'stg_department'
-    name = db.Column(db.String(50))
-    type = db.Column(db.String(50))
-    ref_id = db.Column(db.Integer, db.ForeignKey('stg_department.id'))
-    head_department = relationship(
-        lambda: Department,
-        remote_side=lambda: Department.id,
-        backref='sub_departments')
+# class Department(Base, AuditMixin):
+#     __tablename__ = 'stg_department'
+#     name = db.Column(db.String(50))
+#     type = db.Column(db.String(50))
+#     ref_id = db.Column(db.Integer, db.ForeignKey('stg_department.id'))
+#     head_department = relationship(
+#         lambda: Department,
+#         remote_side=lambda: Department.id,
+#         backref='sub_departments')
+#
+#     def __repr__(self):
+#         return f'{self.name}'
 
-    def __repr__(self):
-        return f'{self.name}'
+TABLE_NAMES = {
+    'Partners': 'partners_hktn',
+    'Tovar': 'tovar_hktn',
+    'Unit': 'unit_hktn',
+    'Head': 'head_hktn',
+    'Summary': 'summary_hktn',
+}
+
+
+class Partners(Base, AuditMixin):
+    __tablename__ = TABLE_NAMES['Partners']
+    name = db.Column(db.String(150))
+    inn = db.Column(db.String(12))
+    kpp = db.Column(db.String(9))
+    address = db.Column(db.String(250))
+
+
+class Tovar(Base, AuditMixin):
+    __tablename__ = TABLE_NAMES['Tovar']
+    nom_number = db.Column(db.String(20))
+    name_tmc = db.Column(db.String(1500))
+    name_tmc_kd = db.Column(db.String(37))
+
+
+class Unit(Base, AuditMixin):
+    __tablename__ = TABLE_NAMES['Unit']
+    unit = db.Column(db.String(50))
+    name_unit = db.Column(db.String(150))
+    okei = db.Column(db.String(4))
+
+
+class Head(Base, AuditMixin):
+    __tablename__ = TABLE_NAMES['Head']
+    doc_number = db.Column(db.String(50))
+    doc_date = db.Column(db.Date)
+    polych_id = db.Column(db.Integer, db.ForeignKey(Partners.id))
+    postovshik_id = db.Column(db.Integer, db.ForeignKey(Partners.id))
+
+
+class Summary(Base, AuditMixin):
+    __tablename__ = TABLE_NAMES['Summary']
+    quantity = db.Column(db.Float)
+    price = db.Column(db.Float)
+    head_id = db.Column(db.Integer, db.ForeignKey(Head.id))
+    unit_id = db.Column(db.Integer, db.ForeignKey(Unit.id))
+    tovar_id = db.Column(db.Integer, db.ForeignKey(Tovar.id))
 
 
 def create_db(engine):
