@@ -1,6 +1,6 @@
 import csv
 
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from constants import CONNECT_STRING, DIALECT, CLIENT_DIR
